@@ -3,46 +3,41 @@ package com.example.cryptotrackermini
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.example.cryptotrackermini.ui.i18n.AppLanguage
+import com.example.cryptotrackermini.ui.navigation.AppNavHost
 import com.example.cryptotrackermini.ui.theme.CryptoTrackerMiniTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val container = (application as CryptoTrackerMiniApplication).appContainer
+        val preferences = getSharedPreferences("app_settings", MODE_PRIVATE)
+
         setContent {
+            var appLanguage by remember {
+                mutableStateOf(
+                    AppLanguage.fromCode(
+                        preferences.getString("language", AppLanguage.IT.code)
+                    )
+                )
+            }
+
             CryptoTrackerMiniTheme {
-                StarterScreen()
+                AppNavHost(
+                    container = container,
+                    appLanguage = appLanguage,
+                    onLanguageChange = { selectedLanguage ->
+                        appLanguage = selectedLanguage
+                        preferences.edit()
+                            .putString("language", selectedLanguage.code)
+                            .apply()
+                    }
+                )
             }
         }
-    }
-}
-
-@Composable
-private fun StarterScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "CryptoTracker Mini",
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        Text(
-            text = "Initial Android Compose project setup",
-            style = MaterialTheme.typography.bodyMedium
-        )
     }
 }

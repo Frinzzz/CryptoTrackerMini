@@ -3,6 +3,7 @@ package com.example.cryptotrackermini.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.cryptotrackermini.domain.model.Crypto
 import com.example.cryptotrackermini.domain.usecase.GetCryptoListUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,13 +23,40 @@ class HomeViewModel(
 
     fun loadCryptos() {
         viewModelScope.launch {
-            _uiState.value = HomeUiState(isLoading = true)
+            val currentQuery = _uiState.value.searchQuery
+            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+
             try {
                 val cryptos = withContext(Dispatchers.IO) { getCryptoListUseCase() }
-                _uiState.value = HomeUiState(cryptos = cryptos)
+                _uiState.value = HomeUiState(
+                    allCryptos = cryptos,
+                    cryptos = filterCryptos(cryptos, currentQuery),
+                    searchQuery = currentQuery
+                )
             } catch (e: Exception) {
-                _uiState.value = HomeUiState(errorMessage = e.message ?: "Errore durante il caricamento")
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = e.message ?: "Loading error"
+                )
             }
+        }
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        val current = _uiState.value
+        _uiState.value = current.copy(
+            searchQuery = query,
+            cryptos = filterCryptos(current.allCryptos, query)
+        )
+    }
+
+    private fun filterCryptos(cryptos: List<Crypto>, query: String): List<Crypto> {
+        val normalizedQuery = query.trim()
+        if (normalizedQuery.isBlank()) return cryptos
+
+        return cryptos.filter { crypto ->
+            crypto.name.contains(normalizedQuery, ignoreCase = true) ||
+                    crypto.symbol.contains(normalizedQuery, ignoreCase = true)
         }
     }
 

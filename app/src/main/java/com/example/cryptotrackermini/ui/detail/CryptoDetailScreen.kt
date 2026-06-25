@@ -29,6 +29,7 @@ import com.example.cryptotrackermini.di.AppContainer
 import com.example.cryptotrackermini.ui.components.ErrorContent
 import com.example.cryptotrackermini.ui.components.LoadingContent
 import com.example.cryptotrackermini.ui.i18n.UiStrings
+import com.example.cryptotrackermini.ui.i18n.readableApiError
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +54,7 @@ fun CryptoDetailScreen(
         when {
             state.isLoading -> LoadingContent(modifier = Modifier.padding(padding))
             state.errorMessage != null && state.detail == null -> ErrorContent(
-                message = state.errorMessage ?: strings.unknownError,
+                message = strings.readableApiError(state.errorMessage),
                 onRetry = viewModel::loadDetail,
                 modifier = Modifier.padding(padding),
                 retryText = strings.retry

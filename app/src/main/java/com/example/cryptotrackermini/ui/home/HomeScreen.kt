@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,6 +28,7 @@ import com.example.cryptotrackermini.ui.components.ErrorContent
 import com.example.cryptotrackermini.ui.components.LoadingContent
 import com.example.cryptotrackermini.ui.i18n.AppLanguage
 import com.example.cryptotrackermini.ui.i18n.UiStrings
+import com.example.cryptotrackermini.ui.i18n.readableApiError
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,15 +76,25 @@ fun HomeScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
+            OutlinedTextField(
+                value = state.searchQuery,
+                onValueChange = viewModel::onSearchQueryChanged,
+                label = { Text(strings.searchCryptoHint) },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
             when {
                 state.isLoading -> LoadingContent()
                 state.errorMessage != null -> ErrorContent(
-                    message = state.errorMessage ?: strings.unknownError,
+                    message = strings.readableApiError(state.errorMessage),
                     onRetry = viewModel::loadCryptos,
                     retryText = strings.retry
                 )
                 state.cryptos.isEmpty() -> ErrorContent(
-                    message = strings.noCryptoFound,
+                    message = if (state.searchQuery.isBlank()) strings.noCryptoFound else strings.noSearchResults,
                     retryText = strings.retry
                 )
                 else -> LazyColumn(

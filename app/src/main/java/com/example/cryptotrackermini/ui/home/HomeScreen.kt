@@ -2,6 +2,7 @@ package com.example.cryptotrackermini.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -63,12 +65,23 @@ fun HomeScreen(
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
-            Button(
-                onClick = onOpenFavorites,
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) { Text(strings.openFavorites) }
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = onOpenFavorites,
+                    modifier = Modifier.weight(1f)
+                ) { Text(strings.openFavorites) }
+
+                OutlinedButton(
+                    onClick = viewModel::loadCryptos,
+                    enabled = !state.isLoading,
+                    modifier = Modifier.weight(1f)
+                ) { Text(strings.refresh) }
+            }
 
             Text(
                 text = strings.topCryptoSubtitle,

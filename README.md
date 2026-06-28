@@ -67,7 +67,7 @@ La lingua è gestita tramite `AppLanguage` e `AppStrings`, mentre la preferenza 
 - Ricerca locale e aggiornamento manuale dei dati.
 - Codice organizzato in modo coerente.
 
-## 11. Possibili migliorie
+## 10. Possibili migliorie
 
 - Aggiunta di WorkManager per aggiornare periodicamente i prezzi dei preferiti.
 - Aggiunta di grafici storici.
